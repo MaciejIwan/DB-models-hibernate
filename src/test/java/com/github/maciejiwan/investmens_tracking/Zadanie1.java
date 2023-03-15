@@ -53,8 +53,8 @@ public class Zadanie1 {
         category1 = categoryRepository.save(Category.builder().name("Kategoria 1").build());
         category2 = categoryRepository.save(Category.builder().name("Kategoria 2").build());
 
-        part1 = partRepository.save(Part.builder().title("Sektor 1").category(category1).build());
-        part2 = partRepository.save(Part.builder().title("Sektor 2").category(category2).build());
+        part1 = partRepository.save(Part.builder().title("part 1").category(category1).build());
+        part2 = partRepository.save(Part.builder().title("part 2").category(category2).build());
 
         List<Part> parts = new ArrayList<>();
         parts.add(part1);
@@ -121,6 +121,9 @@ public class Zadanie1 {
     void shouldFindOrdersByPart() {
         // When
         List<Order> orders = orderRepository.findByLineItems_Part(part2);
+        for (Order order : orders){
+            System.out.println(order);
+        }
 
         // Then
         assertEquals(3, orders.size());
