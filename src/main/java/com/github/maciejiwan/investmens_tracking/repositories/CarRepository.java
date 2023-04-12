@@ -1,7 +1,6 @@
-package com.github.maciejiwan.investmens_tracking.repository;
+package com.github.maciejiwan.investmens_tracking.repositories;
 
-import com.github.maciejiwan.investmens_tracking.entity.Car;
-import com.github.maciejiwan.investmens_tracking.entity.UserModel;
+import com.github.maciejiwan.investmens_tracking.entities.Car;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

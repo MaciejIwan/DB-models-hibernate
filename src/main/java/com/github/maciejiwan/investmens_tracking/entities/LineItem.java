@@ -1,10 +1,7 @@
-package com.github.maciejiwan.investmens_tracking.entity;
+package com.github.maciejiwan.investmens_tracking.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

@@ -1,7 +1,7 @@
 package com.github.maciejiwan.investmens_tracking;
 
-import com.github.maciejiwan.investmens_tracking.entity.*;
-import com.github.maciejiwan.investmens_tracking.repository.*;
+import com.github.maciejiwan.investmens_tracking.entities.*;
+import com.github.maciejiwan.investmens_tracking.repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

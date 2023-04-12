@@ -1,12 +1,10 @@
-package com.github.maciejiwan.investmens_tracking.entity;
+package com.github.maciejiwan.investmens_tracking.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
