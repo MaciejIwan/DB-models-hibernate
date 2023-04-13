@@ -2,10 +2,11 @@ version: '3.8'
 
 services:
     db:
+        container_name: oro_db
         image: postgres:12-alpine
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
             POSTGRES_DB: somedatabase
         ports:
-            - "8001:5432"
+            - "8002:5432"
