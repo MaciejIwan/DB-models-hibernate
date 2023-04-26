@@ -33,16 +33,38 @@ public class Zadanie2 {
 
     @BeforeEach
     public void setup() {
-        Hall hall = hallRepository.save(Hall.builder().seatsCount(5).build());
+        Hall hall = hallRepository.save(Hall.builder().hallNumber(1).seatsCount(5).build());
+        Hall hall2 = hallRepository.save(Hall.builder().hallNumber(2).seatsCount(10).build());
+
         Movie movie = movieRepository.save(Movie.builder().title("Movie 1").build());
+        Movie movie2 = movieRepository.save(Movie.builder().title("Movie 2").build());
+        Movie movie3 = movieRepository.save(Movie.builder().title("Movie 3").build());
+
         screeningRepository.save(Screening.builder().hall(hall).movie(movie).build());
+        screeningRepository.save(Screening.builder().hall(hall).movie(movie2).build());
+        screeningRepository.save(Screening.builder().hall(hall2).movie(movie3).build());
     }
     @Test
     void should_return_movies_in_given_hall() {
+        // Given
+        int hallNumber = 1;
+
         // When
-        List<MovieDto> movies = screeningRepository.findMovieInHallById(0L);
+        List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber);
 
         // Then
-        assertEquals(0, movies.size());
+        assertEquals(1, movies.size());
+    }
+
+    @Test
+    void should_return_screening_in_given_hall() {
+        // Given
+        int hallNumber = 1;
+
+        // When
+        List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber);
+
+        // Then
+        assertEquals(1, movies.size());
     }
 }

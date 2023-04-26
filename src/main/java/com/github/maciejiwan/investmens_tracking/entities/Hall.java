@@ -16,6 +16,9 @@ public class Hall {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = false)
+    private int hallNumber;
+
     private int seatsCount;
 
     @ManyToOne(cascade = CascadeType.ALL)

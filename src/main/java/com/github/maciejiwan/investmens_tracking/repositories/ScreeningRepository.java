@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public interface ScreeningRepository extends JpaRepository<Screening, Long> {
 
-    @Query(value = "SELECT new com.github.maciejiwan.investmens_tracking.dtos.MovieDto(s.movie.title) FROM Screening s WHERE s.hall.id = :hall")
-    List<MovieDto> findMovieInHallById(@Param("hall")Long hallId);
+    @Query(value = "SELECT new com.github.maciejiwan.investmens_tracking.dtos.MovieDto(s.movie.title) FROM Screening s WHERE s.hall.hallNumber = :hall")
+    List<MovieDto> findMovieInHall(@Param("hall")int hallId);
 
 }
