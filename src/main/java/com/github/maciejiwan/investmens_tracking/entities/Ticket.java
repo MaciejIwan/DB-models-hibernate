@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +24,9 @@ public class Ticket {
 
     @OneToOne
     private UserModel user;
+    private int seatNumber;
+    private int price;
 
     private TicketType type;
+    private Date purchaseDate;
 }
