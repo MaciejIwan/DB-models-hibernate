@@ -45,7 +45,7 @@ public class Zadanie2 {
         screeningRepository.save(Screening.builder().hall(hall2).movie(movie3).build());
     }
     @Test
-    void should_return_movies_in_given_hall() {
+    void should_return_movies_in_given_hall_1() {
         // Given
         int hallNumber = 1;
 
@@ -53,18 +53,37 @@ public class Zadanie2 {
         List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber);
 
         // Then
-        assertEquals(1, movies.size());
+        int expected = 2;
+        assertEquals(expected, movies.size());
     }
 
     @Test
-    void should_return_screening_in_given_hall() {
-        // Given
-        int hallNumber = 1;
+    void should_return_screenings_in_given_hall_2() {
+    }
+    @Test
+    void should_return_screenings_with_given_movie_id_3() {
+    }
 
-        // When
-        List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber);
+    @Test
+    void should_return_screenings_with_given_movie_title_4() {
+    }
+    @Test
+    void should_return_users_lists_on_given_screen_5() {
+    }
+    @Test
+    void should_return_screenings_list_where_user_had_ticket_by_id_6() {
+    }
+    @Test
+    void should_return_screenings_list_where_user_had_ticket_by_username_7() {
+    }
 
-        // Then
-        assertEquals(1, movies.size());
+    @Test
+    void should_return_taken_seats_in_given_screening_by_id_8() {
+    }
+    @Test
+    void should_return_list_of_halls_where_given_movie_was_plays_9() {
+    }
+    @Test
+    void should_return_tickets_what_user_bought_between_given_datetime_range10() {
     }
 }
