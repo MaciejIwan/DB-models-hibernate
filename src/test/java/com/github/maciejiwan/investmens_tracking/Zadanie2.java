@@ -1,6 +1,8 @@
 package com.github.maciejiwan.investmens_tracking;
 
 import com.github.maciejiwan.investmens_tracking.dtos.MovieDto;
+import com.github.maciejiwan.investmens_tracking.dtos.ScreeningDto;
+import com.github.maciejiwan.investmens_tracking.dtos.UserDto;
 import com.github.maciejiwan.investmens_tracking.entities.*;
 import com.github.maciejiwan.investmens_tracking.enums.TicketType;
 import com.github.maciejiwan.investmens_tracking.repositories.*;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -18,7 +21,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.assertj.core.api.ClassBasedNavigableIterableAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -41,6 +43,7 @@ public class Zadanie2 {
     public void setup() {
 
     }
+
     @Test
     void should_return_movies_in_given_hall_1() {
         Hall hall = hallRepository.save(Hall.builder().hallNumber(1).seatsCount(5).build());
@@ -58,7 +61,8 @@ public class Zadanie2 {
         int hallNumber = 1;
 
         // When
-        List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber);
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<MovieDto> movies = screeningRepository.findMovieInHall(hallNumber, pageRequest);
 
         // Then
         int expected = 2;
@@ -74,12 +78,13 @@ public class Zadanie2 {
         Screening screening2 = screeningRepository.save(Screening.builder().startDate(new Date()).endDate(new Date()).hall(hall).movie(movie).basicPrice(10).build());
 
         // When
-        List<Screening> screenings = screeningRepository.findScreeningsByHallId(hall.getId());
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<ScreeningDto> screenings = screeningRepository.findScreeningsByHallId(hall.getId(), pageRequest);
 
         // Then
         assertEquals(2, screenings.size());
-        assertTrue(screenings.contains(screening1));
-        assertTrue(screenings.contains(screening2));
+        assertEquals(screening1.getMovie().getTitle(), screenings.get(0).getMovie().getTitle());
+        assertEquals(screening2.getMovie().getTitle(), screenings.get(1).getMovie().getTitle());
     }
 
     @Test
@@ -94,13 +99,13 @@ public class Zadanie2 {
                 .hall(hall2).movie(movie).basicPrice(10).build());
 
         // When
-        List<Screening> screenings = screeningRepository.findScreeningsByMovieId(movie.getId());
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<ScreeningDto> screenings = screeningRepository.findScreeningsByMovieId(movie.getId(), pageRequest);
 
         // Then
         assertEquals(2, screenings.size());
-        assertTrue(screenings.contains(screening1));
-        assertTrue(screenings.contains(screening2));
-    }
+        assertEquals(new ScreeningDto(screening1), screenings.get(0));
+        assertEquals(new ScreeningDto(screening2), screenings.get(1));}
 
     @Test
     void should_return_screenings_with_given_movie_title_4() {
@@ -118,11 +123,12 @@ public class Zadanie2 {
                 .hall(hall).movie(movie).basicPrice(10).build();
         screeningRepository.saveAll(Arrays.asList(screening1, screening2));
 
-        List<Screening> screeningsByTitle = screeningRepository.findScreeningsByMovieTitle(movieTitle);
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<ScreeningDto> screenings = screeningRepository.findScreeningsByMovieTitle(movieTitle, pageRequest);
 
-        assertEquals(2, screeningsByTitle.size());
-        assertEquals(movieTitle, screeningsByTitle.get(0).getMovie().getTitle());
-        assertEquals(movieTitle, screeningsByTitle.get(1).getMovie().getTitle());
+        assertEquals(2, screenings.size());
+        assertEquals(movieTitle, screenings.get(0).getMovie().getTitle());
+        assertEquals(movieTitle, screenings.get(1).getMovie().getTitle());
     }
 
     @Test
@@ -145,66 +151,61 @@ public class Zadanie2 {
         Ticket ticket2 = Ticket.builder().screening(screening).user(user2).type(TicketType.NORMAL).build();
         ticketRepository.saveAll(Arrays.asList(ticket1, ticket2));
 
-        List<UserModel> usersByScreeningId = screeningRepository.findUsersByScreeningId(screening.getId());
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<UserDto> usersByScreeningId = screeningRepository.findUsersByScreeningId(screening.getId(), pageRequest);
 
         assertEquals(2, usersByScreeningId.size());
-        assertTrue(usersByScreeningId.contains(user1));
-        assertTrue(usersByScreeningId.contains(user2));
+        assertTrue(usersByScreeningId.contains(new UserDto(user1)));
+        assertTrue(usersByScreeningId.contains(new UserDto(user2)));
     }
 
 
-//    @Test
-//    void should_return_screenings_with_given_movie_title_4() {
-//    }
-//    @Test
-//    void should_return_users_lists_on_given_screen_5() {
-//    }
-@Test
-void should_return_screenings_list_where_user_had_ticket_by_id_6() {
-    // given
-    UserModel user = UserModel.builder().email("john.doe@example.com").name("John Doe").build();
-    userRepository.save(user);
+    @Test
+    void should_return_screenings_list_where_user_had_ticket_by_id_6() {
+        // given
+        UserModel user = UserModel.builder().email("john.doe@example.com").name("John Doe").build();
+        userRepository.save(user);
 
-    Movie movie = Movie.builder().title("The Matrix").build();
-    movieRepository.save(movie);
+        Movie movie = Movie.builder().title("The Matrix").build();
+        movieRepository.save(movie);
 
-    Hall hall = Hall.builder().hallNumber(1).seatsCount(50).build();
-    hallRepository.save(hall);
+        Hall hall = Hall.builder().hallNumber(1).seatsCount(50).build();
+        hallRepository.save(hall);
 
-    Date startDate = new Date();
-    Date endDate = new Date(startDate.getTime() + 3600000); // Add one hour to start date
+        Date startDate = new Date();
+        Date endDate = new Date(startDate.getTime() + 3600000); // Add one hour to start date
 
-    Screening screening1 = Screening.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .hall(hall)
-            .movie(movie)
-            .basicPrice(10)
-            .build();
+        Screening screening1 = Screening.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .hall(hall)
+                .movie(movie)
+                .basicPrice(10)
+                .build();
 
-    Screening screening2 = Screening.builder()
-            .startDate(endDate)
-            .endDate(new Date(endDate.getTime() + 3600000)) // Add one hour to end date
-            .hall(hall)
-            .movie(movie)
-            .basicPrice(10)
-            .build();
+        Screening screening2 = Screening.builder()
+                .startDate(endDate)
+                .endDate(new Date(endDate.getTime() + 3600000)) // Add one hour to end date
+                .hall(hall)
+                .movie(movie)
+                .basicPrice(10)
+                .build();
 
-    screeningRepository.saveAll(Arrays.asList(screening1, screening2));
+        screeningRepository.saveAll(Arrays.asList(screening1, screening2));
 
-    Ticket ticket1 = Ticket.builder().user(user).screening(screening1).seatNumber(1).build();
-    Ticket ticket2 = Ticket.builder().user(user).screening(screening2).seatNumber(2).build();
+        Ticket ticket1 = Ticket.builder().user(user).screening(screening1).seatNumber(1).build();
+        Ticket ticket2 = Ticket.builder().user(user).screening(screening2).seatNumber(2).build();
 
-    ticketRepository.saveAll(Arrays.asList(ticket1, ticket2));
+        ticketRepository.saveAll(Arrays.asList(ticket1, ticket2));
 
-    // when
-    long userId = 1L;
-    List<Screening> screenings = screeningRepository.findScreeningsByUserId(userId);
+        // when
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<ScreeningDto> screenings = screeningRepository.findScreeningsByUserId(user.getId(), pageRequest);
 
-    // then
-    assertNotNull(screenings);
-    assertEquals(2, screenings.size());
-}
+        // then
+        assertNotNull(screenings);
+        assertEquals(2, screenings.size());
+    }
 
 
     @Test
@@ -252,14 +253,15 @@ void should_return_screenings_list_where_user_had_ticket_by_id_6() {
                 .price(10)
                 .build());
 
-        List<Screening> screenings = screeningRepository.findScreeningsByEmail(user.getEmail());
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        List<ScreeningDto> screenings = screeningRepository.findScreeningsByEmail(user.getEmail(), pageRequest);
         assertNotNull(screenings);
         assertEquals(2, screenings.size());
     }
 
 
     @Test
-    void should_return_taken_seats_in_given_screening_by_id_8() {
+    void should_return_count_of_taken_seats_in_given_screening_by_id_8() {
         Hall hall = hallRepository.save(Hall.builder().hallNumber(1).seatsCount(50).build());
         Movie movie = movieRepository.save(Movie.builder().title("Avengers").build());
         Screening screening = screeningRepository.save(Screening.builder()
@@ -284,9 +286,10 @@ void should_return_screenings_list_where_user_had_ticket_by_id_6() {
                 .price(10)
                 .build());
 
-        List<Integer> takenSeats = ticketRepository.findTakenSeatsByScreeningId(screening.getId());
+        long actualTakenSeats = ticketRepository.countTakenSeatsByScreeningId(screening.getId());
+        long expectedTakenSeats = 2;
 
-        Assertions.assertThat(takenSeats).containsExactlyInAnyOrderElementsOf(Arrays.asList(10, 20));
+        Assertions.assertThat(actualTakenSeats).isEqualTo(expectedTakenSeats);
     }
 
     @Test
@@ -312,9 +315,10 @@ void should_return_screenings_list_where_user_had_ticket_by_id_6() {
                 .basicPrice(10)
                 .build());
 
-        List<Hall> halls = screeningRepository.findHallsByMovieId(movie.getId());
-
-        Assertions.assertThat(halls).containsExactlyInAnyOrderElementsOf(Arrays.asList(hall1, hall2));
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        long actualCount = screeningRepository.countHallsByMovieId(movie.getId());
+        long expectedCount = 2;
+        Assertions.assertThat(actualCount).isEqualTo(expectedCount);
     }
 
 
@@ -350,9 +354,10 @@ void should_return_screenings_list_where_user_had_ticket_by_id_6() {
         // search for tickets between the given date range
         Date startDate = Date.from(LocalDateTime.of(2023, 5, 1, 0, 0, 0).atZone(ZoneId.systemDefault()).toInstant());
         Date endDate = Date.from(LocalDateTime.of(2023, 5, 2, 23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
-        List<Ticket> tickets = ticketRepository.findTicketsByUserAndScreeningDateRange(user.getId(), startDate, endDate);
 
-        Assertions.assertThat(tickets).containsExactlyInAnyOrderElementsOf(Arrays.asList(ticket1, ticket2));
+        long actualCount = ticketRepository.countTicketsByUserAndScreeningDateRange(user.getId(), startDate, endDate);
+        long expectedCount = 2;
+        Assertions.assertThat(actualCount).isEqualTo(expectedCount);
     }
 
 
