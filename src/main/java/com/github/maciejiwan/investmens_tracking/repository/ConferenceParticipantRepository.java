@@ -32,4 +32,6 @@ public interface ConferenceParticipantRepository extends JpaRepository<Conferenc
 
     @Query("SELECT cr.name, COUNT(p) FROM ConferenceRoom cr LEFT JOIN cr.presentations p GROUP BY cr.name")
     List<Object[]> countPresentationsByRoom();
+
+
 }

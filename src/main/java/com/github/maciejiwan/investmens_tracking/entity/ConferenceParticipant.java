@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,10 @@ public class ConferenceParticipant {
     @Column(name = "role")
     private Role role;
 
-    @OneToMany(mappedBy = "conferenceRoom")
+    @OneToMany(mappedBy = "presenter")
     private List<Presentation> presentations;
 
+    public ConferenceParticipant() {
+        presentations = new ArrayList<>();
+    }
 }
