@@ -1,7 +1,7 @@
 package com.github.maciejiwan.investmens_tracking.repository;
 
 import com.github.maciejiwan.investmens_tracking.entity.ConferenceParticipant;
-import com.github.maciejiwan.investmens_tracking.entity.Topic;
+import com.github.maciejiwan.investmens_tracking.enums.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,12 +22,12 @@ public interface ConferenceParticipantRepository extends JpaRepository<Conferenc
     List<ConferenceParticipant> findOrganizers();
 
     @Query("SELECT cp FROM ConferenceParticipant cp WHERE cp.country = :country")
-    List<ConferenceParticipant> findByCountry(String country);
+    List<ConferenceParticipant> findByCountry(Country country);
 
     @Query("SELECT DISTINCT p.topic FROM Presentation p")
-    List<Topic> findAllTopics();
+    List<String> findAllTopics();
 
-    @Query("SELECT cp FROM ConferenceParticipant cp JOIN cp.presentations p GROUP BY cp.id ORDER BY COUNT(p) DESC")
+    @Query("SELECT cp FROM ConferenceParticipant cp JOIN cp.presentations p GROUP BY cp.id ORDER BY COUNT(p) DESC LIMIT 1")
     ConferenceParticipant findParticipantWithMostPresentations();
 
     @Query("SELECT cr.name, COUNT(p) FROM ConferenceRoom cr LEFT JOIN cr.presentations p GROUP BY cr.name")

@@ -7,6 +7,6 @@ services:
         environment:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: somedatabase
+            POSTGRES_DB: oro_database
         ports:
-            - "8002:5432"
+            - "4002:5432"

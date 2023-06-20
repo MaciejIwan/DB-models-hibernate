@@ -3,7 +3,7 @@ package com.github.maciejiwan.investmens_tracking.repository;
 import com.github.maciejiwan.investmens_tracking.entity.ConferenceParticipant;
 import com.github.maciejiwan.investmens_tracking.entity.ConferenceRoom;
 import com.github.maciejiwan.investmens_tracking.entity.Presentation;
-import com.github.maciejiwan.investmens_tracking.entity.Topic;
+import com.github.maciejiwan.investmens_tracking.enums.Country;
 import com.github.maciejiwan.investmens_tracking.enums.Role;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,13 +56,14 @@ class ConferenceParticipantRepositoryTest {
 
         List<ConferenceParticipant> scientists = participantRepository.findScientists();
         assertEquals(2, scientists.size());
+        assertEquals(Role.SCIENTIST, scientists.get(0).getRole());
     }
 
     @Test
     public void testFindAllParticipants() {
-        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, "USA");
-        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.SCIENTIST, "Canada");
-        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, "USA");
+        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, Country.CHINA);
+        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.SCIENTIST, Country.FRANCE);
+        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, Country.BRAZIL);
 
         participantRepository.save(participant1);
         participantRepository.save(participant2);
@@ -73,11 +74,11 @@ class ConferenceParticipantRepositoryTest {
     }
 
     @Test
-    public void testFindParticipantsByRole() {
-        ConferenceParticipant scientist1 = createParticipant("John Doe", Role.SCIENTIST, "USA");
-        ConferenceParticipant scientist2 = createParticipant("Jane Smith", Role.SCIENTIST, "Canada");
-        ConferenceParticipant student1 = createParticipant("Adam Johnson", Role.STUDENT, "USA");
-        ConferenceParticipant organizer1 = createParticipant("Sarah Williams", Role.ORGANIZER, "Australia");
+    public void testFindParticipantsByRole_1() {
+        ConferenceParticipant scientist1 = createParticipant("John Doe", Role.SCIENTIST, Country.USA);
+        ConferenceParticipant scientist2 = createParticipant("Jane Smith", Role.SCIENTIST, Country.CANADA);
+        ConferenceParticipant student1 = createParticipant("Adam Johnson", Role.STUDENT, Country.USA);
+        ConferenceParticipant organizer1 = createParticipant("Sarah Williams", Role.ORGANIZER, Country.AUSTRALIA);
 
         participantRepository.save(scientist1);
         participantRepository.save(scientist2);
@@ -95,76 +96,78 @@ class ConferenceParticipantRepositoryTest {
     }
 
     @Test
-    public void testFindParticipantsByCountry() {
-        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, "USA");
-        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, "Canada");
-        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, "USA");
+    public void testFindParticipantsByCountry_3() {
+        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, Country.USA);
+        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, Country.CANADA);
+        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, Country.USA);
 
         participantRepository.save(participant1);
         participantRepository.save(participant2);
         participantRepository.save(participant3);
 
-        List<ConferenceParticipant> participantsFromUSA = participantRepository.findByCountry("USA");
+
+        List<ConferenceParticipant> participantsFromUSA = participantRepository.findByCountry(Country.USA);
         assertEquals(2, participantsFromUSA.size());
 
-        List<ConferenceParticipant> participantsFromCanada = participantRepository.findByCountry("Canada");
+        List<ConferenceParticipant> participantsFromCanada = participantRepository.findByCountry(Country.CANADA);
         assertEquals(1, participantsFromCanada.size());
     }
 
     @Test
-    public void testFindAllTopics() {
-        Topic topic1 = createTopic("Topic 1");
-        Topic topic2 = createTopic("Topic 2");
-        Topic topic3 = createTopic("Topic 3");
+    public void testFindAllTopics_4() {
 
-        Presentation presentation1 = createPresentation( topic1);
-        Presentation presentation2 = createPresentation(topic2);
-        Presentation presentation3 = createPresentation( topic3);
+        Presentation presentation1 = createPresentation( "Topic 1");
+        Presentation presentation2 = createPresentation("Topic 2");
+        Presentation presentation3 = createPresentation( "Topic 3");
 
-        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, "USA");
-        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, "Canada");
-        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, "USA");
+        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, Country.USA);
+        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, Country.CANADA);
+        ConferenceParticipant participant3 = createParticipant("Adam Johnson", Role.ORGANIZER, Country.USA);
 
-        participant1.getPresentations().add(presentation1);
-        participant1.getPresentations().add(presentation2);
-        participant2.getPresentations().add(presentation3);
+        participant1.addPresentation(presentation1);
+        participant1.addPresentation(presentation2);
+        participant2.addPresentation(presentation3);
 
         participantRepository.save(participant1);
         participantRepository.save(participant2);
         participantRepository.save(participant3);
 
-        List<Topic> topics = participantRepository.findAllTopics();
+        List<ConferenceParticipant> lis = participantRepository.findAll();
+        List<String> topics = participantRepository.findAllTopics();
         assertEquals(3, topics.size());
     }
 
     @Test
-    public void testFindParticipantWithMostPresentations() {
-        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, "USA");
-        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, "Canada");
+    public void testFindParticipantWithMostPresentations_5() {
+        ConferenceParticipant participant1 = createParticipant("John Doe", Role.SCIENTIST, Country.USA);
+        ConferenceParticipant participant2 = createParticipant("Jane Smith", Role.STUDENT, Country.CANADA);
 
-        Presentation presentation1 = createPresentation( null);
-        Presentation presentation2 = createPresentation( null);
-        Presentation presentation3 = createPresentation( null);
+        Presentation presentation1 = createPresentation( "Topic 1");
+        Presentation presentation2 = createPresentation( "Topic 2");
+        Presentation presentation3 = createPresentation( "Topic 3");
 
-        participant1.getPresentations().add(presentation1);
-        participant1.getPresentations().add(presentation2);
-        participant2.getPresentations().add(presentation3);
+        participant1.addPresentation(presentation1);
+        participant1.addPresentation(presentation2);
+        participant2.addPresentation(presentation3);
 
         participantRepository.save(participant1);
         participantRepository.save(participant2);
 
+        List<ConferenceParticipant> participants = participantRepository.findAll();
         ConferenceParticipant participantWithMostPresentations = participantRepository.findParticipantWithMostPresentations();
+
         assertEquals(participant1.getId(), participantWithMostPresentations.getId());
+        assertEquals(2, participantWithMostPresentations.getPresentations().size());
     }
 
     @Test
-    public void testCountPresentationsByRoom() {
+    public void testCountPresentationsByRoom_6() {
         ConferenceRoom room1 = createConferenceRoom("Room 1");
         ConferenceRoom room2 = createConferenceRoom("Room 2");
 
-        Presentation presentation1 = createPresentation(null);
-        Presentation presentation2 = createPresentation(null);
-        Presentation presentation3 = createPresentation(null);
+        Presentation presentation1 = createPresentation("Topic 1");
+        Presentation presentation2 = createPresentation("Topic 2");
+        Presentation presentation3 = createPresentation("Topic 3");
 
         room1.getPresentations().add(presentation1);
         room1.getPresentations().add(presentation2);
@@ -177,7 +180,7 @@ class ConferenceParticipantRepositoryTest {
         assertEquals(2, presentationsByRoom.size());
     }
 
-    private ConferenceParticipant createParticipant(String name, Role role, String country) {
+    private ConferenceParticipant createParticipant(String name, Role role, Country country) {
         ConferenceParticipant participant = new ConferenceParticipant();
         participant.setName(name);
         participant.setRole(role);
@@ -185,16 +188,10 @@ class ConferenceParticipantRepositoryTest {
         return participant;
     }
 
-    private Presentation createPresentation(Topic topic) {
+    private Presentation createPresentation(String topic) {
         Presentation presentation = new Presentation();
         presentation.setTopic(topic);
         return presentation;
-    }
-
-    private Topic createTopic(String name) {
-        Topic topic = new Topic();
-        topic.setTitle(name);
-        return topic;
     }
 
     private ConferenceRoom createConferenceRoom(String name) {
